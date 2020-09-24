@@ -15,7 +15,17 @@ public class Player : MonoBehaviour
     private float jumpHeight = 1.0f;
     [SerializeField]
     private float gravityValue = 9.81f;
+
+    [SerializeField]
     private GameObject muzzleFlash;
+    [SerializeField]
+    private GameObject hitMarker;
+    [SerializeField]
+    private AudioSource weaponAudio;
+
+    [SerializeField]
+    private int currentAmmo;
+    private int maxAmmo = 50;
 
     private CharacterController characterController;
 
@@ -23,7 +33,8 @@ public class Player : MonoBehaviour
     void Start()
     {
         characterController = GetComponent<CharacterController>();
-        muzzleFlash = GameObject.Find("LookY/Main Camera/Weapon/Muzzle_Flash").gameObject;
+
+        currentAmmo = maxAmmo;
 
         UnityEngine.Cursor.visible = false;
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
@@ -38,29 +49,52 @@ public class Player : MonoBehaviour
             UnityEngine.Cursor.lockState = CursorLockMode.Confined;
         }
 
-        if (Input.GetMouseButton((int)MouseButton.LeftMouse))
+        if (currentAmmo > 0 && Input.GetMouseButton((int)MouseButton.LeftMouse))
         {
-            muzzleFlash.SetActive(true);
+            Shoot();
         }
         else
         {
             muzzleFlash.SetActive(false);
+            weaponAudio.Stop();
         }
 
-        if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse))
+        if (Input.GetKeyDown(KeyCode.R) && !Input.GetMouseButton((int)MouseButton.LeftMouse))
         {
-            Vector3 screenCenter = new Vector3(0.5f, 0.5f, 0);
-            Ray rayOrigin = Camera.main.ViewportPointToRay(screenCenter);
-            RaycastHit hitInfo;
-
-            if (Physics.Raycast(rayOrigin, out hitInfo))
-            {
-                Debug.Log("hit: " +hitInfo.transform.name);
-            }
+            StartCoroutine(Reloading());
         }
 
         HandleMovement();
     }
+
+    IEnumerator Reloading()
+    {
+        Debug.Log("enumerator");
+        yield return new WaitForSeconds(1.5f);
+        currentAmmo = maxAmmo;
+    }
+
+    private void Shoot()
+    {
+        muzzleFlash.SetActive(true);
+        currentAmmo--;
+
+        if (!weaponAudio.isPlaying)
+        {
+            weaponAudio.Play();
+        }
+
+        Vector3 screenCenter = new Vector3(0.5f, 0.5f, 0);
+        Ray rayOrigin = Camera.main.ViewportPointToRay(screenCenter);
+        RaycastHit hitInfo;
+
+        if (Physics.Raycast(rayOrigin, out hitInfo))
+        {
+            var hitMarkerObject = Instantiate(hitMarker, hitInfo.point, Quaternion.identity);
+            Destroy(hitMarkerObject, 1f);
+        }
+    }
+
     private void HandleMovement()
     {
         var horizontalAxis = Input.GetAxis("Horizontal");
