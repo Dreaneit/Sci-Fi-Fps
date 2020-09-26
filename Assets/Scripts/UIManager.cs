@@ -9,6 +9,8 @@ public class UIManager : MonoBehaviour
     private Text ammoText;
     [SerializeField]
     private Text pickupCoinText;
+    [SerializeField]
+    private Image inventoryCoin;
 
     public void UpdateAmmo(int ammoCount)
     {
@@ -18,5 +20,10 @@ public class UIManager : MonoBehaviour
     public void PickupCoinTextVisibility(bool visibility)
     {
         pickupCoinText.gameObject.SetActive(visibility);
+    }
+
+    public void InventoryCoinVisibility(bool visibility)
+    {
+        inventoryCoin.gameObject.SetActive(visibility);
     }
 }

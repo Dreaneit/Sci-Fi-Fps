@@ -132,5 +132,6 @@ public class Player : MonoBehaviour
     public void CollectCoin()
     {
         coins += 1;
+        uiManager.InventoryCoinVisibility(true);
     }
 }
