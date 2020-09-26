@@ -24,17 +24,21 @@ public class Player : MonoBehaviour
     private AudioSource weaponAudio;
 
     [SerializeField]
-    private int currentAmmo;
+    private int currentAmmo, coins;
     private int maxAmmo = 50;
+    private bool isReloading = false, canPickupCoin = false;
 
     private CharacterController characterController;
+    private UIManager uiManager;
 
     // Start is called before the first frame update
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
 
         currentAmmo = maxAmmo;
+        uiManager.UpdateAmmo(currentAmmo);
 
         UnityEngine.Cursor.visible = false;
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
@@ -59,8 +63,9 @@ public class Player : MonoBehaviour
             weaponAudio.Stop();
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && !Input.GetMouseButton((int)MouseButton.LeftMouse))
+        if (Input.GetKeyDown(KeyCode.R) && !Input.GetMouseButton((int)MouseButton.LeftMouse) && !isReloading)
         {
+            isReloading = true;
             StartCoroutine(Reloading());
         }
 
@@ -69,15 +74,17 @@ public class Player : MonoBehaviour
 
     IEnumerator Reloading()
     {
-        Debug.Log("enumerator");
         yield return new WaitForSeconds(1.5f);
         currentAmmo = maxAmmo;
+        isReloading = false;
+        uiManager.UpdateAmmo(currentAmmo);
     }
 
     private void Shoot()
     {
         muzzleFlash.SetActive(true);
         currentAmmo--;
+        uiManager.UpdateAmmo(currentAmmo);
 
         if (!weaponAudio.isPlaying)
         {
@@ -120,5 +127,10 @@ public class Player : MonoBehaviour
         playerVelocity = transform.transform.TransformDirection(playerVelocity);
 
         characterController.Move(playerVelocity * Time.deltaTime);
+    }
+
+    public void CollectCoin()
+    {
+        coins += 1;
     }
 }
