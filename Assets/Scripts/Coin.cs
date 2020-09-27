@@ -19,8 +19,7 @@ public class Coin : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            canPickupCoin = true;
-            uiManager.PickupCoinTextVisibility(canPickupCoin);
+            HandlePickupCoin(true);
         }
     }
 
@@ -28,25 +27,25 @@ public class Coin : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Player player = other.gameObject.GetComponent<Player>();
             if (canPickupCoin && Input.GetKeyDown(KeyCode.E))
             {
+                Player player = other.gameObject.GetComponent<Player>();
                 player.CollectCoin();
                 AudioSource.PlayClipAtPoint(coinPickupSound, transform.position);
                 Destroy(this.gameObject);
-                DisablePickup();
+                HandlePickupCoin(false);
             }
         }
     }
 
     private void OnTriggerExit()
     {
-        DisablePickup();
+        HandlePickupCoin(false);
     }
 
-    private void DisablePickup()
+    private void HandlePickupCoin(bool canPickup)
     {
-        canPickupCoin = false;
+        canPickupCoin = canPickup;
         uiManager.PickupCoinTextVisibility(canPickupCoin);
     }
 }

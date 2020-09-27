@@ -8,7 +8,6 @@ public class Player : MonoBehaviour
 
     private Vector3 playerVelocity;
     private float yVelocity;
-    private bool canDoubleJump;
     [SerializeField]
     private float playerSpeed = 5.0f;
     [SerializeField]
@@ -22,6 +21,8 @@ public class Player : MonoBehaviour
     private GameObject hitMarker;
     [SerializeField]
     private AudioSource weaponAudio;
+    [SerializeField]
+    private GameObject weapon;
 
     [SerializeField]
     private int currentAmmo, coins;
@@ -132,6 +133,34 @@ public class Player : MonoBehaviour
     public void CollectCoin()
     {
         coins += 1;
-        uiManager.InventoryCoinVisibility(true);
+        HandleCoinInInvetory();
+    }
+
+    public void RemoveCoin(int quantity)
+    {
+        coins -= quantity;
+        HandleCoinInInvetory();
+    }
+
+    private void HandleCoinInInvetory()
+    {
+        if (coins > 0)
+        {
+            uiManager.InventoryCoinVisibility(true);
+        }
+        else
+        {
+            uiManager.InventoryCoinVisibility(false);
+        }
+    }
+
+    public bool HasAnyCoin()
+    {
+        return coins > 0;
+    }
+
+    public void EnableWeapon()
+    {
+        weapon.gameObject.SetActive(true);
     }
 }
