@@ -100,6 +100,12 @@ public class Player : MonoBehaviour
         {
             var hitMarkerObject = Instantiate(hitMarker, hitInfo.point, Quaternion.identity);
             Destroy(hitMarkerObject, 1f);
+
+            Destructible crate = hitInfo.transform.GetComponent<Destructible>();
+            if (crate != null)
+            {
+                crate.CrateDestroy();
+            }
         }
     }
 
